@@ -1,6 +1,1 @@
-{"receipt_id": "b0d1b4e8-7d5f-4675-bda4-39e0dff0685d", "datetime": "2025-12-09 14:35:16.823061", "items": [], "total": 0, "method": "cash"}
-{"receipt_id": "e8d4a3f1-11aa-4385-8334-3e99168465d5", "datetime": "2025-12-09 14:42:23.754305", "items": [{"name": "ID Lace", "price": 75, "qty": 10, "total": 750}], "total": 750, "method": "cash"}
-{"receipt_id": "9c8d199b-5b6d-4df1-8442-6f18a8d00f21", "datetime": "2025-12-09 14:50:38.326878", "items": [{"name": "ID Lace", "price": 75, "qty": 12, "total": 900}], "total": 900, "method": "1"}
-{"receipt_id": "c414011e-b5f3-4369-811a-9153d8ed63c5", "datetime": "2025-12-09 14:51:13.255274", "items": [{"name": "Logo", "price": 50, "qty": 12, "total": 600}], "total": 600, "method": "1"}
-{"receipt_id": "80251331-dbb3-4a05-80ba-9f47615ec0b2", "datetime": "2025-12-09 14:59:08.590071", "items": [{"name": "Logo", "price": 50, "qty": 2, "total": 100}], "total": 100, "method": "wd"}
-{"receipt_id": "4d4af17f-8357-4996-a513-101d2141ffa8", "datetime": "2025-12-09 15:10:20.080180", "items": [{"name": "ID Lace", "price": 75, "qty": 1221, "total": 91575}, {"name": "Logo", "price": 50, "qty": 12, "total": 600}], "total": 92175, "method": "cash"}
+
