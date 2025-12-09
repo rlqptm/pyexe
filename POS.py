@@ -59,7 +59,26 @@ def load_transactions():
     return data
 
 
-def save_transaction(items, total, method):
+def save_transaction(items, total, method, cash):
+    receipt_id = str(uuid.uuid4())
+    trans = {
+        "receipt_id": receipt_id,
+        "datetime": str(datetime.datetime.now()),
+        "items": items,
+        "total": total,
+        "method": method,
+        "cash": cash
+    }
+    
+
+    with open("transactions.json", "a") as file:
+        file.write(json.dumps(trans) + "\n")
+
+    print()
+    success("Saved to transactions.json")
+    print(f"{CYAN}Receipt ID: {WHITE}{receipt_id}\n")
+
+def save_transaction_card(items, total, method):
     receipt_id = str(uuid.uuid4())
     trans = {
         "receipt_id": receipt_id,
@@ -68,6 +87,7 @@ def save_transaction(items, total, method):
         "total": total,
         "method": method
     }
+    
 
     with open("transactions.json", "a") as file:
         file.write(json.dumps(trans) + "\n")
@@ -119,9 +139,9 @@ while er == 2:
             option(1, "View Transaction History")
             option(2, "Exit")
 
-            choose = int(input("Choose ▶ "))
+            choose = input("Choose ▶ ")
 
-            if choose == 1:
+            if choose == "1":
                 clear()
                 header("Transaction List")
 
@@ -162,18 +182,30 @@ while er == 2:
                 print(f"{MAGENTA}Paid Using:{WHITE} {selected['method']}\n")
 
                 input("Press Enter...")
+                clear()
 
-            elif choose == 2:
+            elif choose == "2":
                 clear()
                 print("1. Back to login")
                 print("2. Exit Program")
-                choose2 = int(input("Choose ▶ "))
+                choose2 = input("Choose ▶ ")
 
                 if choose2 == 1:
                     et = 1
                 elif choose2 == 2:
                     er = 1
                     et = 1
+                elif choose2 == "":
+                    print("Triple B ka ba?!")
+                else:
+                    print("SBAPN!")
+
+            elif choose == "":
+                clear()
+                print("Kupal, wala ka naman nilagay Boi~!")
+            else:
+                clear()
+                print("Ang kulit mo Boi~!")
 
     # ===============================
     # CASHIER
@@ -186,17 +218,17 @@ while er == 2:
 
             option(1, "Add Item to Cart")
             option(2, "Logout")
+            print("")
+            choose = input("Choose ▶ ")
 
-            choose = int(input("Choose ▶ "))
-
-            if choose == 1:
+            if choose == "1":
                 clear()
                 cart = []
                 total = 0
 
                 header("Products")
 
-                print(f"{YELLOW}Done = finish | clear = clear cart | view = view cart | cancel = cancel{RESET}\n")
+                print(f"{YELLOW} D = finish | C = clear cart | V = view cart | cancel = cancel{RESET}\n")
 
                 for i in products:
                     print(f"{GREEN}{i['name']} {WHITE}- ₱{i['price']}")
@@ -204,14 +236,14 @@ while er == 2:
                 while True:
                     item = input("\nChoose product ▶ ").lower()
 
-                    if item == "view":
+                    if item.lower() == "v":
                         clear()
                         header("cart")
                         for i in cart:
                             print(f"{WHITE}{i['name']} x{i['qty']} = ₱{i['total']}")
                         header("Products")
 
-                        print(f"{YELLOW}Done = finish | clear = clear cart | view = view cart | cancel = cancel{RESET}\n")
+                        print(f"{YELLOW} D = finish | C = clear cart | V = view cart | cancel = cancel{RESET}\n")
 
                         for i in products:
                             print(f"{GREEN}{i['name']} {WHITE}- ₱{i['price']}")
@@ -219,17 +251,17 @@ while er == 2:
                         continue
 
 
-                    if item == "clear":
+                    if item.lower() == "c":
                         cart.clear()
                         total = 0
                         success("Cart Cleared!")
                         continue
 
-                    if item == "cancel":
+                    if item.lower() == "cancel":
                         clear()
                         break
 
-                    if item == "done":
+                    if item == "d":
                         if cart == []:
                             error("Cart is empty!")
                             continue
@@ -241,23 +273,57 @@ while er == 2:
                         method = input("Payment ▶ ").lower()
 
                         if method.lower() == "cancel": break
-                        elif method.lower() == "cash" and "card":
+                        elif method.lower() == "cash" :
+                            cash = input("Enter Amount: ")
+                            if cash.isdigit():
+                                cash = int(cash)
+                                if cash >= total:
+                                    header("receipt")
+
+                                    for c in cart:
+                                        print(f"{WHITE}{c['name']} x{c['qty']} - ₱{c['total']}")
+                                    print("---------------------")
+                                    print(f"{MAGENTA}TOTAL:{WHITE} ₱{total}")
+                                    print(f"{MAGENTA}Payment Method:{WHITE} {method}")
+                                    print(f"{MAGENTA}Amount of Cash:{WHITE} ₱{cash}")
+                                    print("---------------------")
+                                    print(f"{MAGENTA}Change:{WHITE} {cash - total}")
+                                    save_transaction(cart, total, method, cash)
+                                    input("Press Enter...")
+                                    clear()
+                                    break
+                                else:
+                                    clear()
+                                    error("Insufficient Cash")
+                                    header("Products")
+
+                                    print(f"{YELLOW} D = finish | C = clear cart | V = view cart | cancel = cancel{RESET}\n")
+
+                                    for i in products:
+                                        print(f"{GREEN}{i['name']} {WHITE}- ₱{i['price']}")
+                                    continue
+                            else:
+                                print("Cash!")
+                        elif method.lower() == "card":
                             header("receipt")
 
                             for c in cart:
                                 print(f"{WHITE}{c['name']} x{c['qty']} - ₱{c['total']}")
                             print("---------------------")
                             print(f"{MAGENTA}TOTAL:{WHITE} ₱{total}")
+                            print()
                             print(f"{MAGENTA}Payment Method:{WHITE} {method}")
 
-                            save_transaction(cart, total, method)
+                            save_transaction_card(cart, total, method)
+                            input("Press Enter...")
+                            clear()
                             break
                         else:
                             clear()
                             error("Invalid Method")
                             header("Products")
 
-                            print(f"{YELLOW}Done = finish | clear = clear cart | view = view cart | cancel = cancel{RESET}\n")
+                            print(f"{YELLOW} D = finish | C = clear cart | V = view cart | cancel = cancel{RESET}\n")
 
                             for i in products:
                                 print(f"{GREEN}{i['name']} {WHITE}- ₱{i['price']}")
@@ -290,22 +356,33 @@ while er == 2:
                         total += cost
 
                         success(f"Added {qty} x {found['name']} = ₱{cost}")
-
                     else:
                         error("There's no such product!")
+                      
 
-            elif choose == 2:
+            elif choose == "2":
                 clear()
                 print("1. Back to login")
                 print("2. Exit Program")
-                choose2 = int(input("Choose ▶ "))
+                choose2 = input("Choose ▶ ")
 
-                if choose2 == 1:
+                if choose2 == "1":
                     et = 1
-                elif choose2 == 2:
+                elif choose2 == '2':
                     er = 1
                     et = 1
+                elif choose2 == "":
+                    print("Triple B ka ba?!")
+                else:
+                    print("SBAPN!")
+                    
+            elif choose == "":
+                clear()
+                print("Kupal, wala ka naman nilagay Boi~!")
+            else:
+                clear()
+                print("Ang kulit mo Boi~!")
 
     else:
         error("Invalid user or password!")
-        time.sleep(1.2)
+        input("Press Enter to continue")
