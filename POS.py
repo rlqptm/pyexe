@@ -59,7 +59,7 @@ def load_transactions():
     return data
 
 
-def save_transaction(items, total, method, cash):
+def save_transaction(items, total, method, cash, change):
     receipt_id = str(uuid.uuid4())
     trans = {
         "receipt_id": receipt_id,
@@ -67,7 +67,8 @@ def save_transaction(items, total, method, cash):
         "items": items,
         "total": total,
         "method": method,
-        "cash": cash
+        "cash": cash,
+        "change": change
     }
     
 
@@ -78,14 +79,16 @@ def save_transaction(items, total, method, cash):
     success("Saved to transactions.json")
     print(f"{CYAN}Receipt ID: {WHITE}{receipt_id}\n")
 
-def save_transaction_card(items, total, method):
+def save_transaction_card(items, total, method, cash, change):
     receipt_id = str(uuid.uuid4())
     trans = {
         "receipt_id": receipt_id,
         "datetime": str(datetime.datetime.now()),
         "items": items,
         "total": total,
-        "method": method
+        "method": method,
+        "cash": cash,
+        "change": change
     }
     
 
@@ -180,6 +183,8 @@ while er == 2:
 
                 print(f"{MAGENTA}\nTOTAL:{WHITE} ₱{selected['total']}")
                 print(f"{MAGENTA}Paid Using:{WHITE} {selected['method']}\n")
+                print(f"{MAGENTA}Amount Paid:{WHITE} ₱{selected['cash']}\n")
+                print(f"{MAGENTA}Change:{WHITE} ₱{selected['change']}\n")
 
                 input("Press Enter...")
                 clear()
@@ -190,9 +195,9 @@ while er == 2:
                 print("2. Exit Program")
                 choose2 = input("Choose ▶ ")
 
-                if choose2 == 1:
+                if choose2 == "1":
                     et = 1
-                elif choose2 == 2:
+                elif choose2 == "2":
                     er = 1
                     et = 1
                 elif choose2 == "":
@@ -278,6 +283,7 @@ while er == 2:
                             if cash.isdigit():
                                 cash = int(cash)
                                 if cash >= total:
+                                    change = cash - total
                                     header("receipt")
 
                                     for c in cart:
@@ -285,10 +291,10 @@ while er == 2:
                                     print("---------------------")
                                     print(f"{MAGENTA}TOTAL:{WHITE} ₱{total}")
                                     print(f"{MAGENTA}Payment Method:{WHITE} {method}")
-                                    print(f"{MAGENTA}Amount of Cash:{WHITE} ₱{cash}")
+                                    print(f"{MAGENTA}Amount Paid:{WHITE} ₱{cash}")
                                     print("---------------------")
-                                    print(f"{MAGENTA}Change:{WHITE} {cash - total}")
-                                    save_transaction(cart, total, method, cash)
+                                    print(f"{MAGENTA}Change:{WHITE} {change}")
+                                    save_transaction(cart, total, method, cash, change)
                                     input("Press Enter...")
                                     clear()
                                     break
@@ -306,15 +312,18 @@ while er == 2:
                                 print("Cash!")
                         elif method.lower() == "card":
                             header("receipt")
+                            cash = total
+                            change = cash - total
 
                             for c in cart:
                                 print(f"{WHITE}{c['name']} x{c['qty']} - ₱{c['total']}")
                             print("---------------------")
                             print(f"{MAGENTA}TOTAL:{WHITE} ₱{total}")
-                            print()
                             print(f"{MAGENTA}Payment Method:{WHITE} {method}")
-
-                            save_transaction_card(cart, total, method)
+                            print(f"{MAGENTA}Amount Paid:{WHITE} {method}")
+                            print("---------------------")
+                            print(f"{MAGENTA}Change:{WHITE} {change}")
+                            save_transaction(cart, total, method, cash, change)
                             input("Press Enter...")
                             clear()
                             break
